@@ -42,9 +42,9 @@ func NewLeech(fs vfs.NameSpace) (res *Leech, err error) {
 
 func (l *Leech) PrintCommentRate() {
 	fmt.Printf("------Comment Rate------\n")
-	fmt.Printf("\t Type: %6.2f%%\n", float32(l.commented.Type)/float32(l.total.Type)*100)
-	fmt.Printf("\t Func: %6.2f%%\n", float32(l.commented.Func)/float32(l.total.Func)*100)
-	fmt.Printf("\tValue: %6.2f%%\n", float32(l.commented.Value)/float32(l.total.Value)*100)
+	fmt.Printf("       Type: %6.2f%%\n", float32(l.commented.Type)/float32(l.total.Type)*100)
+	fmt.Printf("       Func: %6.2f%%\n", float32(l.commented.Func)/float32(l.total.Func)*100)
+	fmt.Printf("      Value: %6.2f%%\n", float32(l.commented.Value)/float32(l.total.Value)*100)
 	fmt.Printf("------------------------\n")
 }
 
