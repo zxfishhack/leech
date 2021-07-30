@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -85,6 +86,12 @@ func (l *Leech) save() (err error) {
 	for k, v := range l.comments {
 		comments = append(comments, kv{k, v})
 	}
+	sort.Slice(docs, func(i, j int) bool {
+		return docs[i].k < docs[j].k
+	})
+	sort.Slice(comments, func(i, j int) bool {
+		return comments[i].k < comments[j].k
+	})
 	//init maps
 	f.Func().Id("init").Params().BlockFunc(func(g *Group) {
 		g.Add(Comment("init maps"))
