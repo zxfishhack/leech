@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/kataras/golog"
 	gobuild "go/build"
 	"golang.org/x/tools/godoc/vfs"
@@ -14,13 +15,37 @@ var (
 	fs = vfs.NewNameSpace()
 )
 
+var (
+	flagSkipCodeGen bool
+	flagModule      string
+	flagVerbose     bool
+
+	flagOutputFile string
+	flagOutputPkg  string
+)
+
 func main() {
-	module := os.Args[len(os.Args)-1]
+	flag.BoolVar(&flagSkipCodeGen, "no-codegen", true, "skip code gen")
+	flag.StringVar(&flagModule, "m", "", "module to leech comments")
+	flag.BoolVar(&flagVerbose, "v", false, "verbose")
+	flag.StringVar(&flagOutputPkg, "pkg", "main", "Package name to use in the generated code. (default \"main\")")
+	flag.StringVar(&flagOutputFile, "o", "./leech_gen.go", "Optional name of the output file to be generated. (default \"./leech_gen.go\")")
+	flag.Parse()
+
+	if flagModule == "" {
+		flag.Usage()
+		return
+	}
+
+	if flagVerbose {
+		golog.SetLevel(golog.Levels[golog.DebugLevel].Name)
+	}
+
 	for _, p := range filepath.SplitList(gobuild.Default.GOPATH) {
-		mp := filepath.Join(p, "src", module)
+		mp := filepath.Join(p, "src", flagModule)
 		if _, err := os.ReadDir(mp); err == nil {
-			fs.Bind(path.Join("/src", module), vfs.OS(mp), "/", vfs.BindReplace)
-			fs.Bind(path.Join("/src", module, "vendor"), mapfs.New(nil), "/", vfs.BindReplace)
+			fs.Bind(path.Join("/src", flagModule), vfs.OS(mp), "/", vfs.BindReplace)
+			fs.Bind(path.Join("/src", flagModule, "vendor"), mapfs.New(nil), "/", vfs.BindReplace)
 			break
 		}
 	}
@@ -31,10 +56,12 @@ func main() {
 		golog.Fatal(err)
 	}
 
-	leech.Walk(module)
+	leech.Walk(flagModule)
+
+	err = leech.save()
+	if err != nil {
+		golog.Fatal(err)
+	}
 
 	leech.PrintCommentRate()
-
-	leech.SaveDoc("doc.json")
-	leech.SaveComment("comment.json")
 }
