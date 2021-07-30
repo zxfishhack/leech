@@ -35,6 +35,9 @@ type Leech struct {
 
 func NewLeech(fs vfs.NameSpace) (res *Leech, err error) {
 	corpus := godoc.NewCorpus(fs)
+	if flagVerbose {
+		corpus.Verbose = true
+	}
 	err = corpus.Init()
 	if err != nil {
 		return
@@ -293,4 +296,8 @@ func (l *Leech) fieldDoc(prefix string, v *ast.Field) {
 			l.comments[fieldName] = txt
 		}
 	}
+}
+
+func (l *Leech) Diagnose() {
+
 }

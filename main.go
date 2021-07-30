@@ -40,7 +40,7 @@ func main() {
 	if flagVerbose {
 		golog.SetLevel(golog.Levels[golog.DebugLevel].Name)
 	}
-
+	fs.Bind("/", vfs.OS(gobuild.Default.GOROOT), "/", vfs.BindReplace)
 	for _, p := range filepath.SplitList(gobuild.Default.GOPATH) {
 		mp := filepath.Join(p, "src", flagModule)
 		if _, err := os.ReadDir(mp); err == nil {
